@@ -20,6 +20,6 @@ Automatizar o processo de validação de banco de dados comercial através de pe
 
 - [ ] O processo deverá envolver a equipe de ESG para desenvolver de acordo com as normas de LGPD, principalmente a pesquisa primária."
 
-## license
+## Licença
 
 [Apache-2.0](./LICENSE)
