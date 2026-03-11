@@ -22,7 +22,7 @@ Automatizar o processo de validação de banco de dados comercial através de pe
 
 ## Pessoas
 
-[Scrum Master e Product Owner - Tarsis]([#](https://github.com/tarsislimadev))
+[Scrum Master e Product Owner - Tarsis](https://github.com/tarsislimadev)
 
 [Desenvolvedor - Emmanuel](https://github.com/emannuelp-boldrin)
 
