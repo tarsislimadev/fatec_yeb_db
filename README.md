@@ -1,6 +1,10 @@
 # YEB - Automatização de Validadação de Banco de Dados
 
-## O projeto envolve
+## Objetivo
+
+Automatizar o processo de validação de banco de dados comercial através de pesquisa secundária e primária, a fim de otimizar o processo comercial dos MDRs e SDRs no contato com prospects, agendamento de reuniões e venda de produtos.
+
+## Escopo
 
 - [ ] Sistema que valida um banco de dados contendo informações básicas de determinadas empresas, como CNPJ, razão Social, Nome fantasia e número cadastrado na Receita Federal
 
