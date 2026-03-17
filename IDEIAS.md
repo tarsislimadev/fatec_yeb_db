@@ -33,3 +33,9 @@ Modelos offline
 ##
 
 Python, LangChain, Ollama.
+
+##
+
+Pelo fato do projeto entrar em contato com dados sensíveis de empresas e pessoas, é importante que o projeto esteja em conformidade com a LGPD.
+
+Podemos discutir os riscos e benefícios de cada abordagem.
