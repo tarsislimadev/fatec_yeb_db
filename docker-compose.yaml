@@ -1,4 +1,5 @@
 services:
+
   db:
     build: ./src/database
     ports:
@@ -9,6 +10,7 @@ services:
       - POSTGRES_DB=postgres
     volumes:
       - .data/postgres:/var/lib/postgresql/data
+    restart: always
 
   crawler:
     build: ./src/crawler
@@ -17,6 +19,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
       - OLLAMA_HOST=http://ollama:11434
+    restart: always
     depends_on:
       - db
       - ollama
@@ -27,3 +30,4 @@ services:
       - 11434:11434
     volumes:
       - .data/ollama:/root/.ollama
+    restart: always
