@@ -15,3 +15,21 @@ Azure para estudantes, na fase de desenvolvimento
 AWS
 
 Google Clud Platform
+
+##
+
+Captura de dados empresariais e captação de clientes.
+
+## O que são pesquisas primárias e secundárias?
+
+Pesquisa primária: dados coletados diretamente pelo pesquisador.
+
+Pesquisa secundária: dados já existentes, coletados por outros pesquisadores.
+
+## 
+
+Modelos offline
+
+##
+
+Python, LangChain, Ollama.
