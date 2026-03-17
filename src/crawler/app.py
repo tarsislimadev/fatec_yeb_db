@@ -11,8 +11,7 @@ import re
 import os
 from urllib.parse import quote
 from sqlalchemy import create_engine, Column, String, Integer, JSON, DateTime, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 import datetime
 
 from langchain_community.llms import Ollama
@@ -24,6 +23,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Configuração do Banco de Dados
+# Base = declarative_base() # Deprecated in SQLAlchemy 2.0
 Base = declarative_base()
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/postgres")
 
@@ -96,10 +96,10 @@ class AIAssistant:
             if response.status_code == 200:
                 models = [m['name'] for m in response.json().get('models', [])]
                 if not any(self.model_name in m for m in models):
-                    logger.info(f"Modelo '{self.model_name}' não encontrado. Iniciando download (pull)...")
+                    logger.info(f"Modelo '{self.model_name}' não encontrado. Iniciando download (pull) - isso pode demorar alguns minutos...")
                     pull_url = f"{self.base_url}/api/pull"
-                    # Pull assíncrono seria melhor, mas aqui faremos um bloqueio inicial simples
-                    requests.post(pull_url, json={"name": self.model_name}, timeout=5)
+                    # Aumentando timeout para download do modelo (10 minutos)
+                    requests.post(pull_url, json={"name": self.model_name}, timeout=600) 
             else:
                 logger.warning(f"Não foi possível verificar modelos no Ollama (Status {response.status_code})")
         except Exception as e:
@@ -183,6 +183,9 @@ class CompanyCrawler:
                 data['raw_emails'] = nlp_contacts['emails']
                 
                 return data
+            elif response.status_code == 422:
+                logger.error(f"Erro 422 (Entidade Não Processável) ao acessar {url}. O site pode estar bloqueando a requisição ou o CNPJ é inválido para este provedor.")
+                return None
             else:
                 logger.error(f"Erro {response.status_code} ao acessar {url}")
                 return None
@@ -263,7 +266,8 @@ class CompanyCrawler:
                 self.save_to_db(data)
                 results.append(data)
             
-            time.sleep(2)
+            # Aumentando tempo de espera para evitar bloqueio (anti-bot)
+            time.sleep(5)
             
         return pd.DataFrame(results)
 
