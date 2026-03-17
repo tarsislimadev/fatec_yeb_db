@@ -156,35 +156,41 @@ class CompanyCrawler:
                 time.sleep(5)
         raise Exception("Não foi possível conectar ao banco de dados após várias tentativas.")
 
-    def fetch_cnpj_biz(self, cnpj: str) -> Optional[Dict]:
+    def fetch_brasil_api(self, cnpj: str) -> Optional[Dict]:
         clean_cnpj = self.cleaner.clean_cnpj(cnpj)
-        url = f"https://cnpj.biz/{clean_cnpj}"
+        url = f"https://brasilapi.com.br/api/cnpj/v1/{clean_cnpj}"
         
         try:
-            logger.info(f"Acessando CNPJ Biz: {url}")
+            logger.info(f"Acessando Brasil API: {url}")
             response = self.session_web.get(url, headers=self.headers, timeout=15)
             if response.status_code == 200:
-                soup = BeautifulSoup(response.text, 'html.parser')
+                json_data = response.json()
                 
-                # CNPJ Biz structure fix: look for text within paragraph or spans
                 data = {
                     'cnpj': cnpj,
-                    'razao_social': self._extract_by_text(soup, "Razão Social"),
-                    'nome_fantasia': self._extract_by_text(soup, "Nome Fantasia"),
-                    'situacao': self._extract_by_text(soup, "Situação"),
-                    'data_abertura': self._extract_by_text(soup, "Data de Abertura"),
-                    'telefone': self._extract_by_text(soup, "Telefone"),
-                    'email': self._extract_by_text(soup, "E-mail"),
+                    'razao_social': json_data.get('razao_social', 'Não encontrado'),
+                    'nome_fantasia': json_data.get('nome_fantasia') or json_data.get('razao_social', 'Não encontrado'),
+                    'situacao': json_data.get('descricao_situacao_cadastral', 'Não encontrado'),
+                    'data_abertura': json_data.get('data_inicio_atividade', 'Não encontrado'),
+                    'telefone': json_data.get('ddd_telefone_1') or json_data.get('ddd_telefone_2', 'Não encontrado'),
+                    'email': json_data.get('email', 'Não encontrado'),
+                    'raw_names': [],
+                    'raw_emails': []
                 }
                 
-                page_text = soup.get_text(separator=' ')
-                nlp_contacts = self.nlp_processor.extract_contacts(page_text)
-                data['raw_names'] = nlp_contacts['names']
-                data['raw_emails'] = nlp_contacts['emails']
+                if data['email'] and data['email'] != 'Não encontrado':
+                    data['raw_emails'].append(data['email'])
+                
+                qsa = json_data.get('qsa', [])
+                if qsa:
+                    data['raw_names'] = [socio.get('nome_socio') for socio in qsa if socio.get('nome_socio')]
                 
                 return data
-            elif response.status_code == 422:
-                logger.error(f"Erro 422 (Entidade Não Processável) ao acessar {url}. O site pode estar bloqueando a requisição ou o CNPJ é inválido para este provedor.")
+            elif response.status_code == 400:
+                logger.error(f"Erro 400 ao acessar {url}. CNPJ inválido.")
+                return None
+            elif response.status_code == 404:
+                logger.error(f"Erro 404 ao acessar {url}. CNPJ não encontrado.")
                 return None
             else:
                 logger.error(f"Erro {response.status_code} ao acessar {url}")
@@ -192,16 +198,6 @@ class CompanyCrawler:
         except Exception as e:
             logger.error(f"Falha na requisição para {cnpj}: {e}")
             return None
-
-    def _extract_by_text(self, soup: BeautifulSoup, label: str) -> str:
-        # Tenta encontrar o texto do label em b, strong ou span
-        element = soup.find(lambda tag: tag.name in ['b', 'strong', 'span'] and label in tag.text)
-        if element:
-            # O valor geralmente está no próximo elemento ou no texto seguinte do pai
-            text = element.parent.get_text(strip=True)
-            if ":" in text:
-                return text.split(":", 1)[1].strip()
-        return "Não encontrado"
 
     def save_to_db(self, data: Dict):
         session = self.SessionLocal()
@@ -253,7 +249,7 @@ class CompanyCrawler:
 
         results = []
         for cnpj in cnpj_list:
-            data = self.fetch_cnpj_biz(cnpj)
+            data = self.fetch_brasil_api(cnpj)
             
             if data:
                 logger.info(f"Processando com IA: {data.get('razao_social', cnpj)}")
