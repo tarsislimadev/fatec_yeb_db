@@ -1,0 +1,1 @@
+- [ ] Proposta (PDF) com valores dos serviços utilizados: ligações telefonicas, hospedagem e outras.
