@@ -20,6 +20,10 @@ Automatizar o processo de validação de banco de dados comercial através de pe
 
 - [ ] O processo deverá envolver a equipe de ESG para desenvolver de acordo com as normas de LGPD, principalmente a pesquisa primária."
 
+## Uso de APIs de CNPJ
+
+O sistema integra o uso de consultas automatizadas a APIs de CNPJ como método para aquisição e enriquecimento de dados. Por meio de serviços como a **Brasil API** e a **[CNPJA (Open API)](https://cnpja.com/en/api/open)**, o crawler faz a busca direta através do CNPJ da empresa, capturando dados oficiais, como a situação cadastral, contatos registrados e o Quadro de Sócios e Administradores (QSA). Essas informações fornecem uma base qualificada para que a Inteligência Artificial identifique os tomadores de decisão na etapa posterior.
+
 ## Pessoas
 
 [Scrum Master e Product Owner - Tarsis](https://github.com/tarsislimadev)
