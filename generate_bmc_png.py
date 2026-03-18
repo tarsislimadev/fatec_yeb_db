@@ -1,6 +1,7 @@
 import os
 from PIL import Image, ImageDraw, ImageFont
 import textwrap
+import psd_tools
 
 def generate_bmc():
     width, height = 1920, 1080
@@ -80,9 +81,19 @@ def generate_bmc():
                 y_text += 35
 
     os.makedirs('docs', exist_ok=True)
-    out_path = os.path.join('docs', 'business_model_canvas.png')
-    image.save(out_path)
-    print(f"Canvas drawn successfully and saved to {out_path}.")
+    
+    # 1. Generate PSD
+    psd_path = os.path.join('docs', 'business_model_canvas.psd')
+    psd_image = psd_tools.PSDImage.frompil(image)
+    psd_image.save(psd_path)
+    print(f"PSD file generated and saved to {psd_path}.")
+    
+    # 2. Generate PNG from PSD
+    png_path = os.path.join('docs', 'business_model_canvas.png')
+    loaded_psd = psd_tools.PSDImage.open(psd_path)
+    png_image = loaded_psd.composite()
+    png_image.save(png_path)
+    print(f"PNG file generated from PSD and saved to {png_path}.")
 
 if __name__ == "__main__":
     generate_bmc()
