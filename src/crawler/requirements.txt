@@ -10,3 +10,4 @@ langchain-core
 ollama
 sqlalchemy
 psycopg2-binary
+pyppeteer
