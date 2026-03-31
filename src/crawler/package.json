@@ -13,6 +13,6 @@
   },
   "homepage": "https://github.com/tarsislimadev/validacao_banco_dados_fatec_yeb#readme",
   "dependencies": {
-    "redis": "^5.11.0"
+    "sqlite3": "^6.0.1"
   }
 }
