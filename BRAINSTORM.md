@@ -37,11 +37,19 @@ az group create --name YebResourceGroup1 --location eastus
 ##
 
 ```bash
-az vm create --resource-group YebResourceGroup1 --name YebVitualMachine1 --image Ubuntu2204 --size Standard_B1s --admin-username azureuser --generate-ssh-keys
+az vm create --resource-group YebResourceGroup1 --name YebVitualMachine1 --image Ubuntu2204 --size Standard_B1s --admin-username azureuser --generate-ssh-keys --location eastus2
 ```
 
 ##
 
-```json
+```bash
+ssh azureuser@20.110.17.54
+```
 
+##
+
+```bash
+sudo apt -y update && sudo apt -y install docker-compose
+
+curl -fsSL "https://raw.githubusercontent.com/tarsislimadev/debian/refs/heads/main/src/install/docker.sh" | bash
 ```
