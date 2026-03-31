@@ -1,5 +1,9 @@
-FROM node
+FROM node:lts-alpine
 
-COPY index.js /app/index.js
+WORKDIR /app
 
-CMD node /app/index.js
+COPY . .
+
+RUN npm ci
+
+CMD node index.js

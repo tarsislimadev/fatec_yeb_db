@@ -6,9 +6,13 @@
     "type": "git",
     "url": "git+https://github.com/tarsislimadev/validacao_banco_dados_fatec_yeb.git"
   },
+  "type": "module",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/tarsislimadev/validacao_banco_dados_fatec_yeb/issues"
   },
-  "homepage": "https://github.com/tarsislimadev/validacao_banco_dados_fatec_yeb#readme"
+  "homepage": "https://github.com/tarsislimadev/validacao_banco_dados_fatec_yeb#readme",
+  "dependencies": {
+    "redis": "^5.11.0"
+  }
 }

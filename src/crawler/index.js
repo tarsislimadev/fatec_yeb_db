@@ -1,11 +1,29 @@
-const { run } = require('./spawn.js')
+import { createClient } from 'redis'
 
-const searchCNPJ = async (cnpj = '83887703000100') => {
-  const html = await run(cnpj)
+import { run } from './spawn.js'
 
-  const cnpjs = html.match(/\d\d\.?\d\d\d\.?\d\d\d\/\d\d\d\d[-]?\d\d/ig)
+const client = createClient({
+  url: 'redis://redis:6379'
+})
 
-  console.log({ cnpjs })
+client.connect()
+
+const saveManyCnpjsOnDatabase = async ({ cnpjs } = {}) => {
+  cnpjs.map(async (cnpj) => {
+    await client.set(`cnpjs.${cnpj}.created_at`, new Date().toISOString())
+
+    console.log('cnpj saved', { cnpj })
+  })
+}
+
+const searchCNPJ = async (cnpj = '') => {
+  const state = { cnpjs: [] }
+
+  await run(cnpj)
+    .then((html) => html.match(/\d\d\.?\d\d\d\.?\d\d\d\/\d\d\d\d[-]?\d\d/ig))
+    .then((cnpjs) => state.cnpjs = cnpjs)
+    .then(() => saveManyCnpjsOnDatabase({ cnpjs: state.cnpjs }))
+    .then(() => state.cnpjs.map(async (cnpj) => await searchCNPJ(cnpj)))
 }
 
 searchCNPJ()

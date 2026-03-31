@@ -1,4 +1,4 @@
-const { spawn } = require('child_process')
+import { spawn } from 'child_process'
 
 const run = async (cnpj = '83887703000100') => {
   return await new Promise((res, rej) => {
@@ -18,4 +18,4 @@ const run = async (cnpj = '83887703000100') => {
   })
 }
 
-module.exports = { run }
+export { run }
