@@ -4,10 +4,333 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Banco de dados Yeb</title>
+  <title>Yeb DB Validation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f1e8;
+      --panel: #fffdf7;
+      --ink: #202022;
+      --muted: #66646b;
+      --accent: #0f766e;
+      --accent-2: #f97316;
+      --stroke: #d6d2c6;
+      --ok: #166534;
+      --warn: #b45309;
+      --danger: #991b1b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Space Grotesk", sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at 0% 0%, #fef3c7 0%, transparent 45%),
+        radial-gradient(circle at 100% 100%, #bbf7d0 0%, transparent 40%),
+        var(--bg);
+      padding: 24px;
+    }
+
+    .app {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      gap: 20px;
+    }
+
+    .hero {
+      border: 1px solid var(--stroke);
+      border-radius: 24px;
+      background: linear-gradient(145deg, #fffefb, #f8f5eb);
+      padding: 28px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      animation: slideIn 480ms ease-out;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-family: "DM Serif Display", serif;
+      font-size: clamp(2rem, 6vw, 3rem);
+      font-weight: 400;
+    }
+
+    .hero p {
+      margin-top: 8px;
+      color: var(--muted);
+      max-width: 70ch;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      border: 1px solid var(--stroke);
+      border-radius: 18px;
+      padding: 20px;
+      background: var(--panel);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      animation: slideIn 550ms ease-out;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+    }
+
+    .lookup-form {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr auto;
+    }
+
+    input,
+    button {
+      font: inherit;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      padding: 12px 14px;
+    }
+
+    input:focus {
+      outline: 2px solid color-mix(in srgb, var(--accent), white 65%);
+      border-color: var(--accent);
+    }
+
+    button {
+      border: 0;
+      background: linear-gradient(120deg, var(--accent), #115e59);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 130ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .status {
+      min-height: 24px;
+      font-weight: 500;
+    }
+
+    .ok {
+      color: var(--ok);
+    }
+
+    .warn {
+      color: var(--warn);
+    }
+
+    .danger {
+      color: var(--danger);
+    }
+
+    .result {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      margin-top: 12px;
+    }
+
+    .tile {
+      padding: 12px;
+      border: 1px dashed #d4d4d8;
+      border-radius: 10px;
+      background: #ffffff;
+    }
+
+    .tile small {
+      color: var(--muted);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid #ede9df;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background: #f8f7f2;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #54515d;
+    }
+
+    @media (max-width: 720px) {
+      .lookup-form {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <main class="app">
+    <section class="hero">
+      <h1>Yeb CNPJ Research Desk</h1>
+      <p>Search a CNPJ, enrich company data with a public source, and store validated records for follow-up outreach and SDR qualification.</p>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>CNPJ Lookup</h2>
+        <form id="lookupForm" class="lookup-form">
+          <input id="cnpjInput" type="text" placeholder="Enter CNPJ (14 digits)" maxlength="18" required>
+          <button type="submit">Validate and Save</button>
+        </form>
+        <p id="status" class="status"></p>
+        <div id="result" class="result"></div>
+      </article>
+
+      <article class="panel">
+        <h2>Recent Validations</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>CNPJ</th>
+              <th>Legal Name</th>
+              <th>Status</th>
+              <th>Source</th>
+            </tr>
+          </thead>
+          <tbody id="companiesBody"></tbody>
+        </table>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const statusEl = document.getElementById("status");
+    const resultEl = document.getElementById("result");
+    const companiesBodyEl = document.getElementById("companiesBody");
+    const formEl = document.getElementById("lookupForm");
+
+    function maskCnpj(value) {
+      const digits = value.replace(/\D/g, "").slice(0, 14);
+      const pieces = [digits.slice(0, 2), digits.slice(2, 5), digits.slice(5, 8), digits.slice(8, 12), digits.slice(12, 14)];
+      return pieces[0] + (pieces[1] ? "." + pieces[1] : "") + (pieces[2] ? "." + pieces[2] : "") + (pieces[3] ? "/" + pieces[3] : "") + (pieces[4] ? "-" + pieces[4] : "");
+    }
+
+    function setStatus(text, tone) {
+      statusEl.textContent = text;
+      statusEl.className = "status " + (tone || "");
+    }
+
+    function renderCompany(company) {
+      resultEl.innerHTML = "";
+      if (!company) {
+        return;
+      }
+
+      const fields = [
+        ["CNPJ", company.cnpj],
+        ["Legal Name", company.legal_name || "-"],
+        ["Trade Name", company.trade_name || "-"],
+        ["Main CNAE", company.main_cnae || "-"],
+        ["Phone", company.phone || "-"],
+        ["Email", company.email || "-"],
+        ["Status", company.status || "-"],
+        ["Source", company.source || "-"],
+      ];
+
+      for (const [label, value] of fields) {
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        tile.innerHTML = `<small>${label}</small><strong>${value}</strong>`;
+        resultEl.appendChild(tile);
+      }
+    }
+
+    async function loadCompanies() {
+      try {
+        const response = await fetch("/api/companies?limit=20");
+        const companies = await response.json();
+
+        companiesBodyEl.innerHTML = "";
+        for (const company of companies) {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${company.cnpj}</td>
+            <td>${company.legal_name || "-"}</td>
+            <td>${company.status || "-"}</td>
+            <td>${company.source || "-"}</td>
+          `;
+          companiesBodyEl.appendChild(row);
+        }
+      } catch (error) {
+        setStatus("Could not load companies list.", "warn");
+      }
+    }
+
+    document.getElementById("cnpjInput").addEventListener("input", (event) => {
+      event.target.value = maskCnpj(event.target.value);
+    });
+
+    formEl.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const cnpj = document.getElementById("cnpjInput").value;
+      setStatus("Running lookup...", "warn");
+
+      try {
+        const response = await fetch("/api/cnpj/lookup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cnpj }),
+        });
+
+        const payload = await response.json();
+        if (!response.ok) {
+          setStatus(payload.error || "Lookup failed.", "danger");
+          renderCompany(null);
+          return;
+        }
+
+        setStatus("Company data found and saved.", "ok");
+        renderCompany(payload.company);
+        loadCompanies();
+      } catch (error) {
+        setStatus("API is unavailable at the moment.", "danger");
+      }
+    });
+
+    loadCompanies();
+  </script>
 
 </body>
 

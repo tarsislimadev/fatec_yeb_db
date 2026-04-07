@@ -1,23 +1,43 @@
 services:
   www:
-    build: './src/www'
+    build: "./src/www"
     ports:
       - "8000:80"
     depends_on:
       - api
+    restart: unless-stopped
 
   api:
-    build: './src/api'
+    build: "./src/api"
     ports:
       - "8080:8080"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: unless-stopped
 
   db:
-    build: './src/database'
+    build: "./src/database"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  db_data:
