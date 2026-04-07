@@ -18,7 +18,7 @@ Automate the commercial database validation process through secondary and primar
 
 - [ ] The research will fill in the same fields that secondary research could not fill or verify the information, also according to customer needs
 
-- [ ] The process should involve the ESG team to develop in accordance with LGPD regulations, especially primary research.
+<!-- - [ ] The process should involve the ESG team to develop in accordance with LGPD regulations, especially primary research. -->
 
 ## Use of CNPJ APIs
 
